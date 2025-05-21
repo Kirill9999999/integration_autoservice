@@ -1,0 +1,56 @@
+# version: '3.8'  <-- Эту строку нужно удалить!
+
+services:
+  # Сервис БД для Сервиса Справочников
+  reference_data_db:
+    image: postgres:15-alpine
+    # ... остальное определение сервиса ...
+    environment:
+      POSTGRES_DB: reference_data_db
+      POSTGRES_USER: user_ref
+      POSTGRES_PASSWORD: password_ref
+    volumes:
+      - ref_data_volume:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Сервис для Сервиса Справочников (бэкэнд)
+  reference_data_service:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://user_ref:password_ref@reference_data_db:5432/reference_data_db
+    depends_on:
+      - reference_data_db
+    command: ["uvicorn", "reference_data_service:app", "--host", "0.0.0.0", "--port", "8000"]
+    restart: unless-stopped
+
+  # Сервис БД для Сервиса Учета Заказ-Нарядов
+  repair_orders_db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: repair_orders_db
+      POSTGRES_USER: user_rep
+      POSTGRES_PASSWORD: password_rep
+    volumes:
+      - rep_orders_volume:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Сервис для Сервиса Учета Заказ-Нарядов (бэкэнд)
+  repair_order_service:
+    build: .
+    ports:
+      - "8001:8001"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://user_rep:password_rep@repair_orders_db:5432/repair_orders_db
+      REFERENCE_DATA_URL: http://reference_data_service:8000
+    depends_on:
+      - repair_orders_db
+      - reference_data_service
+    command: ["uvicorn", "repair_order_service:app", "--host", "0.0.0.0", "--port", "8001"]
+    restart: unless-stopped
+
+# Определяем именованные тома
+volumes:
+  ref_data_volume:
+  rep_orders_volume:
