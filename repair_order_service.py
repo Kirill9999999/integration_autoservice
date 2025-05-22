@@ -118,7 +118,6 @@ class RepairOrderUpdate(BaseModel):
     status: Optional[str] = None
     description: Optional[str] = None
 
-# --- API Endpoints ---
 
 @app.post("/setup", summary="Настроить базу данных (создать таблицы)")
 async def setup_database():
@@ -194,7 +193,6 @@ async def get_repair_order_by_id(repair_order_id: int, session: SessionDep) -> R
     if not repair_order:
         raise HTTPException(status_code=404, detail="Заказ-наряд не найден")
 
-    # Pydantic будет использовать кастомный сериализатор для service_ids
     return repair_order
 
 
@@ -203,7 +201,6 @@ async def get_repair_order_by_id(repair_order_id: int, session: SessionDep) -> R
          summary="Обновить статус или описание заказ-наряда")
 async def update_repair_order(repair_order_id: int, repair_order_update: RepairOrderUpdate, session: SessionDep) -> RepairOrder:
     """Обновляет статус или описание существующего заказ-наряда."""
-    # Загружаем объект, и для ответа сразу подгружаем отношение 'services'
     repair_order = await session.get(RepairOrderModel, repair_order_id, options=[selectinload(RepairOrderModel.services)])
 
     if not repair_order:

@@ -68,18 +68,16 @@ class Employee(EmployeeCreate):
     model_config = ConfigDict(from_attributes=True)
     id: int
 
-# --- API Endpoints (остаются без изменений, кроме /setup) ---
+
 
 @app.post("/setup", summary="Настроить базу данных (создать таблицы)")
 async def setup_database():
     """Создает новые таблицы на основе ORM моделей в подключенной БД."""
     async with engine.begin() as conn:
-        # Внимание: drop_all удалит все данные! Для production используйте миграции (Alembic)
         # await conn.run_sync(Base.metadata.drop_all) # Закомментировано, чтобы не удалять данные при каждом setup
         await conn.run_sync(Base.metadata.create_all)
     return {"message": "Настройка базы данных завершена"}
 
-# ... (Остальные эндпоинты /services, /employees, DELETE - код остается тем же) ...
 
 @app.post("/services", # Английский путь
          tags=["Services"], # Английский тег
@@ -174,5 +172,4 @@ async def delete_employee(employee_id: int, session: SessionDep):
 
 
 if __name__ == "__main__":
-    # Локальный запуск с дефолтной SQLite БД, если не задана переменная окружения DATABASE_URL
     uvicorn.run("reference_data_service:app", host="127.0.0.1", port=8000, reload=True)

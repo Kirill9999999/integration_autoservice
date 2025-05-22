@@ -1,10 +1,8 @@
-# version: '3.8'  <-- Эту строку нужно удалить!
 
 services:
   # Сервис БД для Сервиса Справочников
   reference_data_db:
     image: postgres:15-alpine
-    # ... остальное определение сервиса ...
     environment:
       POSTGRES_DB: reference_data_db
       POSTGRES_USER: user_ref
