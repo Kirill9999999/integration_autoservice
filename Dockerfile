@@ -1,10 +1,10 @@
-# Используем легковесный образ Python с нужной версией
+# Используем легковесный образ Python
 FROM python:3.11-slim
 
 # Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# Копируем файл зависимостей и устанавливаем их
+
 # Используем --no-cache-dir для экономии места
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копируем весь остальной код проекта в рабочую директорию
 COPY . .
 
-# Команда для запуска приложения (переопределяется в docker-compose.yml для каждого сервиса)
+
 # Оставляем ENTRYPOINT пустым или указываем что-то базовое
 ENTRYPOINT []
 CMD []
