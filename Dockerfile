@@ -12,7 +12,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копируем весь остальной код проекта в рабочую директорию
 COPY . .
 
-
 # Оставляем ENTRYPOINT пустым или указываем что-то базовое
 ENTRYPOINT []
 CMD []
