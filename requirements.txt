@@ -5,4 +5,4 @@ asyncpg
 psycopg2-binary
 requests
 pydantic>=2.0
-aiosqlite
+aiosqlite #если нужна локальная отладка
